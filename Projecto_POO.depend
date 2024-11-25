@@ -1,0 +1,62 @@
+# depslib dependency file v1.0
+1730712764 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\biblioteca.cpp
+	"Biblioteca.h"
+
+1730712764 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\biblioteca.h
+	<iostream>
+	<list>
+	<map>
+	"Pessoa.h"
+	"Geral.h"
+
+1730711558 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\pessoa.h
+
+1730712964 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\geral.h
+	<iostream>
+	<string>
+
+1730711418 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\geral.cpp
+	"Geral.h"
+
+1730711593 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\leitorcomum.cpp
+	"LeitorComum.h"
+
+1730711593 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\leitorcomum.h
+	<Pessoa.h>
+
+1730711477 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\livrocientifico.cpp
+	"LivroCientifico.h"
+
+1730711477 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\livrocientifico.h
+	<Geral.h>
+
+1730711449 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\livroficcao.cpp
+	"LivroFiccao.h"
+
+1730711449 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\livroficcao.h
+	<Geral.h>
+
+1730711558 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\pessoa.cpp
+	"Pessoa.h"
+
+1730711626 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\professor.cpp
+	"Professor.h"
+
+1730711626 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\professor.h
+	<Pessoa.h>
+
+1730711508 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\revista.cpp
+	"Revista.h"
+
+1730711508 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\revista.h
+	<Geral.h>
+
+1730711834 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\src\uteis.cpp
+	"Uteis.h"
+
+1730711834 c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\include\uteis.h
+
+1730712832 source:c:\users\fmorgado\onedrive\ambiente de trabalho\projecto_poo\main.cpp
+	<iostream>
+	"Biblioteca.h"
+

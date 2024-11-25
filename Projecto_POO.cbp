@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Projecto_POO" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/Projecto_POO" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add directory="include" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/Projecto_POO" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add directory="include" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+		</Compiler>
+		<Unit filename="include/Biblioteca.h" />
+		<Unit filename="include/Geral.h" />
+		<Unit filename="include/LeitorComum.h" />
+		<Unit filename="include/LivroCientifico.h" />
+		<Unit filename="include/LivroFiccao.h" />
+		<Unit filename="include/Pessoa.h" />
+		<Unit filename="include/Professor.h" />
+		<Unit filename="include/Revista.h" />
+		<Unit filename="include/Uteis.h" />
+		<Unit filename="main.cpp" />
+		<Unit filename="src/Biblioteca.cpp" />
+		<Unit filename="src/Geral.cpp" />
+		<Unit filename="src/LeitorComum.cpp" />
+		<Unit filename="src/LivroCientifico.cpp" />
+		<Unit filename="src/LivroFiccao.cpp" />
+		<Unit filename="src/Pessoa.cpp" />
+		<Unit filename="src/Professor.cpp" />
+		<Unit filename="src/Revista.cpp" />
+		<Unit filename="src/Uteis.cpp" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>
