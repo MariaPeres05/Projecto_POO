@@ -3,9 +3,6 @@
 #include <iomanip>
 #include <sstream>
 
-
-
-
 time_t Uteis::parseDateTime(const char* datetimeString, const char* format) {
     std::istringstream dateStream(datetimeString);
     struct tm tmStruct = {};

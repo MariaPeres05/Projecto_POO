@@ -1,131 +1,183 @@
 #include "include/Biblioteca.h"
 #include "include/LivroFiccao.h"
 #include "include/Estudante.h"
-#include "include/LivroCientifico.h"
 #include "include/Professor.h"
+#include "include/Senior.h"
 #include "include/LeitorComum.h"
+#include "include/LivroCientifico.h"
+#include "include/LivroEducativo.h"
+#include "include/Revista.h"
+#include "include/Jornal.h"
 #include "include/Multa.h"
 #include <iostream>
 #include <limits>
-#include "include/Emprestimo.h"
-#include "include/Livro.h"
-#include "include/Pessoa.h"
 
-
-
-void exibirMenu() {
-    std::cout << "\n================ Biblioteca =================" << std::endl;
-    std::cout << "1. Listar Livros" << std::endl;
-    std::cout << "2. Adicionar Livro" << std::endl;
-    std::cout << "3. Listar Leitores" << std::endl;
-    std::cout << "4. Adicionar Leitor" << std::endl;
-    std::cout << "5. Registar Empréstimo" << std::endl;
-    std::cout << "6. Verificar Multas Pendentes" << std::endl;
-    std::cout << "7. Prolongar Empréstimos" << std::endl;
-    std::cout << "8. Verificar Atrasos(se houverem)" << std::endl;
+void exibirMenuInicial() {
+    std::cout << "\n=========== Sistema de Gestão de Biblioteca ===========" << std::endl;
+    std::cout << "1. Bibliotecário" << std::endl;
+    std::cout << "2. Leitor" << std::endl;
     std::cout << "0. Sair" << std::endl;
+    std::cout << "=======================================================" << std::endl;
+    std::cout << "Escolha uma opção: ";
+}
+
+void exibirSubmenuLeitor() {
+    std::cout << "\n=========== Escolha o Tipo de Leitor ===========" << std::endl;
+    std::cout << "1. Estudante" << std::endl;
+    std::cout << "2. Professor" << std::endl;
+    std::cout << "3. Leitor Comum" << std::endl;
+    std::cout << "4. Senior" << std::endl;
+    std::cout << "0. Voltar ao menu inicial" << std::endl;
+    std::cout << "==============================================" << std::endl;
+    std::cout << "Escolha uma opção: ";
+}
+
+void exibirMenuLeitor() {
+    std::cout << "\n=========== Menu do Leitor ===========" << std::endl;
+    std::cout << "1. Listar Livros Disponíveis" << std::endl;
+    std::cout << "2. Verificar Multas Pendentes" << std::endl;
+    std::cout << "3. Verificar Empréstimos e Reservas" << std::endl;
+    std::cout << "0. Voltar ao menu anterior" << std::endl;
+    std::cout << "======================================" << std::endl;
+    std::cout << "Escolha uma opção: ";
+}
+
+void exibirMenuBibliotecario() {
+    std::cout << "\n=========== Menu do Bibliotecário ===========" << std::endl;
+    std::cout << "1. Adicionar Livro" << std::endl;
+    std::cout << "2. Listar Livros por Categoria" << std::endl;
+    std::cout << "3. Adicionar Leitor" << std::endl;
+    std::cout << "4. Listar Leitores" << std::endl;
+    std::cout << "5. Registrar Empréstimo" << std::endl;
+    std::cout << "6. Sistema de Reservas" << std::endl;
+    std::cout << "7. Sistema de Notificações de Atraso" << std::endl;
+    std::cout << "8. Gerar Relatório de Multas" << std::endl;
+    std::cout << "0. Voltar ao menu inicial" << std::endl;
     std::cout << "============================================" << std::endl;
     std::cout << "Escolha uma opção: ";
 }
 
 int main() {
     Biblioteca biblioteca;
-
     int opcao;
+
     do {
-        exibirMenu();
+        exibirMenuInicial();
         std::cin >> opcao;
-        std::cin.ignore(); // Limpar buffer para evitar problemas com getline
+        std::cin.ignore(); // Limpar buffer de entrada
 
         switch (opcao) {
-            case 1: { // Listar Livros
-                biblioteca.ListagemLivros();
+            case 1: { // Menu do Bibliotecário
+                int opcaoBibliotecario;
+                do {
+                    exibirMenuBibliotecario();
+                    std::cin >> opcaoBibliotecario;
+                    std::cin.ignore();
+
+                    switch (opcaoBibliotecario) {
+                        case 1: {
+                            // Adicionar Livro
+                            std::cout << "Escolha o tipo de livro:\n1. Ficção\n2. Científico\n3. Educativo\n4. Revista\n5. Jornal\n";
+                            int tipoLivro;
+                            std::cin >> tipoLivro;
+                            std::cin.ignore();
+                            std::string titulo, autor, extra;
+
+                            std::cout << "Digite o título: ";
+                            std::getline(std::cin, titulo);
+                            std::cout << "Digite o autor: ";
+                            std::getline(std::cin, autor);
+
+                            Livro* novoLivro = nullptr;
+                            if (tipoLivro == 1) {
+                                novoLivro = new LivroFiccao(titulo, autor);
+                            } else if (tipoLivro == 2) {
+                                std::cout << "Digite a área científica: ";
+                                std::getline(std::cin, extra);
+                                novoLivro = new LivroCientifico(titulo, autor, extra);
+                            } else if (tipoLivro == 3) {
+                                std::cout << "Digite o grau de escolaridade: ";
+                                std::getline(std::cin, extra);
+                                novoLivro = new LivroEducativo(titulo, autor, extra);
+                            } else if (tipoLivro == 4) {
+                                std::cout << "Digite o número da edição: ";
+                                std::getline(std::cin, extra);
+                                novoLivro = new Revista(titulo, autor, std::stoi(extra));
+                            } else if (tipoLivro == 5) {
+                                std::cout << "Digite a data de publicação: ";
+                                std::getline(std::cin, extra);
+                                novoLivro = new Jornal(titulo, autor, extra);
+                            }
+
+                            if (novoLivro) {
+                                biblioteca.AdicionarLivro(novoLivro);
+                                std::cout << "Livro adicionado com sucesso!\n";
+                            } else {
+                                std::cout << "Erro ao adicionar livro.\n";
+                            }
+                            break;
+                        }
+                        case 2: {
+                            // Listar Livros por Categoria
+                            std::string categoria;
+                            std::cout << "Digite a categoria: ";
+                            std::cin.ignore();
+                            std::getline(std::cin, categoria);
+                            biblioteca.ListagemLivrosPorCategoria(categoria);
+                            break;
+                        }
+                        case 0:
+                            std::cout << "Voltando ao menu inicial...\n";
+                            break;
+                        default:
+                            std::cout << "Opção inválida! Tente novamente.\n";
+                    }
+                } while (opcaoBibliotecario != 0);
                 break;
             }
-            case 2: { // Adicionar Livro
-                std::cout << "Escolha o tipo de livro a ser adicionado:\n";
-                std::cout << "1. Ficção\n2. Científico\n3.Livro Educativo\n";
-                int tipoLivro;
-                std::cin >> tipoLivro;
-                std::cin.ignore();
-
-                std::string titulo, autor, areaOuCategoria;
-                std::cout << "Digite o título: ";
-                std::getline(std::cin, titulo);
-                std::cout << "Digite o autor: ";
-                std::getline(std::cin, autor);
-
-                Livro* novoLivro = nullptr;
-                if (tipoLivro == 1) {
-                    novoLivro = new LivroFiccao(titulo, autor);
-                } else if (tipoLivro == 2) {
-                    std::cout << "Digite a área científica: ";
-                    std::getline(std::cin, areaOuCategoria);
-                    novoLivro = new LivroCientifico(titulo, autor, areaOuCategoria);
-                }
-
-                if (novoLivro) {
-                    biblioteca.AdicionarLivro(novoLivro);
-                } else {
-                    std::cout << "Tipo de livro inválido!" << std::endl;
-                }
-                break;
-            }
-           case 3: { // Listar Leitores
-              biblioteca.ListagemLeitores();
-              break;
-            }
-            case 4: { // Adicionar Leitor
-                std::cout << "Escolha o tipo de leitor a ser adicionado:\n";
-                std::cout << "1. Estudante\n2. Professor\n3. Leitor Comum\n";
+            case 2: { // Menu do Leitor
                 int tipoLeitor;
-                std::cin >> tipoLeitor;
-                std::cin.ignore();
+                do {
+                    exibirSubmenuLeitor();
+                    std::cin >> tipoLeitor;
+                    std::cin.ignore();
 
-                std::string nome;
-                int id;
-                std::cout << "Digite o nome: ";
-                std::getline(std::cin, nome);
-                std::cout << "Digite o ID: ";
-                std::cin >> id;
+                    if (tipoLeitor == 0) {
+                        std::cout << "Voltando ao menu inicial...\n";
+                        break;
+                    }
 
-                Pessoa* novoLeitor = nullptr;
-                if (tipoLeitor == 1) {
-                    novoLeitor = new Estudante(nome, id);
-                } else if (tipoLeitor == 2) {
-                    novoLeitor = new Professor(nome, id);
-                } else if (tipoLeitor == 3) {
-                    novoLeitor = new LeitorComum(nome, id);
-                }
+                    int opcaoLeitor;
+                    do {
+                        exibirMenuLeitor();
+                        std::cin >> opcaoLeitor;
+                        std::cin.ignore();
 
-                if (novoLeitor) {
-                    biblioteca.AddLeitor(novoLeitor);
-                } else {
-                    std::cout << "Tipo de leitor inválido!" << std::endl;
-                }
-                break;
-            }
-            case 5: { // Registar Empréstimo
-                std::cout << "Registrar empréstimos ainda não implementado!" << std::endl;
-                break;
-            }
-            case 6: { // Gerar Relatório de Multas Pendentes
-                biblioteca.RelatorioMultasPendentes();
-                break;
-            }
-            case 7: { // Prorrogar Empréstimos
-                biblioteca.ProlongarEmprestimos();
-                break;
-            }
-            case 8: { // Sistema de Notificações de Atraso
-                biblioteca.SistemaNotificacoesAtraso();
+                        switch (opcaoLeitor) {
+                            case 1:
+                                biblioteca.ListagemLivros();
+                                break;
+                            case 2:
+                                biblioteca.RelatorioMultasPendentes();
+                                break;
+                            case 3:
+                                biblioteca.ExibirReservas();
+                                break;
+                            case 0:
+                                std::cout << "Voltando ao menu anterior...\n";
+                                break;
+                            default:
+                                std::cout << "Opção inválida! Tente novamente.\n";
+                        }
+                    } while (opcaoLeitor != 0);
+                } while (tipoLeitor != 0);
                 break;
             }
             case 0:
-                std::cout << "Saindo do sistema..." << std::endl;
+                std::cout << "Encerrando o programa...\n";
                 break;
             default:
-                std::cout << "Opção inválida! Tente novamente." << std::endl;
+                std::cout << "Opção inválida! Tente novamente.\n";
         }
     } while (opcao != 0);
 

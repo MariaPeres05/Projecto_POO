@@ -20,11 +20,6 @@ Emprestimo::Emprestimo(Livro* livro, Pessoa* leitor)
 
 Emprestimo::~Emprestimo() {}
 
-#include <iostream>
-#include <sstream>
-#include <iomanip>
-#include <ctime>
-
 int calcularDiasAtrasados(const std::string& dataDevolucao) {
     time_t agora = time(0); // Data atual
     struct tm tmAgora = *localtime(&agora); // Preenche tmAgora com a data e hora atuais
