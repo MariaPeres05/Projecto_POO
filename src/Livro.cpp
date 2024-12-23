@@ -23,6 +23,10 @@ void Livro::emprestar() {
     }
 }
 
+bool Livro::estaEmprestado() const {
+    return this->emprestado; // Se a variável emprestado for true, o livro está emprestado
+}
+
 void Livro::devolver() {
     disponivel = true;
 }

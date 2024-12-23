@@ -12,8 +12,9 @@ void LivroFiccao::exibirDetalhes() const {
               << ", Disponível: " << (disponivel ? "Sim" : "Não") << std::endl;
 }
 
-
-
 std::string LivroFiccao::getCategoria() const {
-    return "Ficção";
+    return "Ficção"; 
+}
+std::string LivroFiccao::getTituloFiccao() const {
+    return titulo;
 }

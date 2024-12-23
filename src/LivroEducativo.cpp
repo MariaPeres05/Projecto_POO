@@ -12,3 +12,9 @@ void LivroEducativo::exibirDetalhes() const {
               << ", Grau Escolaridade: " << grauEscolaridade
               << ", Disponível: " << (disponivel ? "Sim" : "Não") << std::endl;
 }
+std::string LivroEducativo::getCategoria() const {
+    return "Educativo";
+}
+std::string LivroEducativo::getGrauEscolaridade() const {
+    return grauEscolaridade; // Retorna o atributo grau de escolaridade
+}

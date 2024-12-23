@@ -1,0 +1,8 @@
+Estudante;Joao Pereira;12778922;5
+Professor;Jose Almeida;23451;10
+Senior;Armando Teixeira;87658;2
+Senior;Antonio Ferreira;156272;2
+Estudante;Maria Oliveira;73849;5
+Leitor Comum;Miguel Ribeiro;73894;3
+Professor;Dr. Helena Martins;37939;10
+Professor;Prof. Ricardo Lopes;25362;10

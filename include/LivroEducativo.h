@@ -3,6 +3,7 @@
 
 #include "Livro.h"
 
+
 class LivroEducativo : public Livro {
 private:
     std::string grauEscolaridade;
@@ -12,6 +13,8 @@ public:
     ~LivroEducativo() override;
 
     void exibirDetalhes() const override;
+    std::string getCategoria() const override;
+    std::string getGrauEscolaridade() const;
 };
 
 #endif // LIVROEDUCATIVO_H
