@@ -120,6 +120,7 @@ bool Biblioteca::LoadLivrosFromFile(const std::string& filename) {
     }
 
     file.close();
+    std::cout << "Livros carregados com sucesso do arquivo.\n";
     return true;
 }
 

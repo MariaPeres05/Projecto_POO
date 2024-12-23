@@ -9,15 +9,23 @@
 Emprestimo::Emprestimo(Livro* livro, Pessoa* leitor)
     : livro(livro), leitor(leitor) {
     time_t now = time(0);
-    dataEmprestimo = ctime(&now);
 
-    tm* t = localtime(&now);
-    t->tm_mday += 7;  // 7 dias para devolução
-    mktime(t);
+    // Convert to tm structure for local time
+    std::tm* localTime = localtime(&now);
+
+    // Prepare a string to hold the formatted date
+    char bufferDevolucao[11]; // yyyy-MM-dd needs 10 characters + null terminator
+
+    // Format the tm structure into yyyy-MM-dd format
+    strftime(bufferDevolucao, sizeof(bufferDevolucao), "%Y-%m-%d", localTime);
+    dataEmprestimo = bufferDevolucao;
+
+    localTime->tm_mday += 7;  // 7 dias para devolução
+    mktime(localTime);
 
     // Ajustando o formato para YYYY-MM-DD
     char buffer[100];
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d", t);  
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", localTime);  
     dataDevolucao = buffer;
 }
 
