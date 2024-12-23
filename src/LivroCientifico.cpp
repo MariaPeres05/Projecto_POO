@@ -13,3 +13,9 @@ void LivroCientifico::exibirDetalhes() const {
               << ", Disponível: " << (disponivel ? "Sim" : "Não") << std::endl;
 }
 
+std::string LivroCientifico::getCategoria() const {
+    return "Científico";  
+}
+std::string LivroCientifico::getAreaCientifica() const {
+    return areaCientifica; // Retorna o atributo área científica
+}

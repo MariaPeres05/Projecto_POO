@@ -13,6 +13,7 @@ public:
 
     void exibirDetalhes() const override;
     std::string getCategoria() const override;
+     std::string getDataPublicacao() const;
 };
 
 #endif // JORNAL_H

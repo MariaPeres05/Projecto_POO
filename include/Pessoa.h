@@ -2,6 +2,7 @@
 #define PESSOA_H
 
 #include <string>
+#include <vector>
 
 class Pessoa {
 protected:
@@ -17,7 +18,7 @@ public:
     virtual float calcularMulta(int diasAtrasado, float taxaBase) const = 0;
     virtual std::string tipo() const = 0;
     int getId() const { return id; }
-
+    bool AddLeitor(Pessoa* P);
     std::string getNome() const { return nome; }
 };
 

@@ -2,6 +2,7 @@
 #define LIVROCIENTIFICO_H
 
 #include "Livro.h"
+#include <string>
 
 class LivroCientifico : public Livro {
 private:
@@ -12,6 +13,8 @@ public:
     ~LivroCientifico() override;
 
     void exibirDetalhes() const override;
+    std::string getCategoria() const override;
+    std::string getAreaCientifica() const; 
 };
 
 #endif // LIVROCIENTIFICO_H

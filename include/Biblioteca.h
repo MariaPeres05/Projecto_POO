@@ -9,11 +9,13 @@
 #include "Emprestimo.h"
 #include <ctime>
 #include <sstream>
+#include <vector>
+#include <string>
 
 class Biblioteca {
 private:
     std::list<Pessoa*> leitores;  // Lista de leitores registrados
-    std::list<Livro*> livros;     // Lista de livros disponíveis
+    std::vector<Livro*> livros;    // Lista de livros disponíveis
     std::list<Emprestimo*> emprestimos;  // Lista de empréstimos ativos
 
 public:
@@ -21,8 +23,10 @@ public:
     virtual ~Biblioteca();
 
     // Métodos principais
-    bool SaveToFile(std::string nf);
-    bool LoadFile(std::string nf);
+    bool SaveLivrosToFile(const std::string& filename);
+    bool LoadLivrosFromFile(const std::string& filename);
+    bool SaveLeitoresToFile(const std::string& filename);  
+    bool LoadLeitoresFromFile(const std::string& filename);
     void RelatorioCategoria(const std::string& cat);
     void ProlongarEmprestimos();
     void SistemaNotificacoesAtraso();
@@ -32,13 +36,13 @@ public:
 
     // Métodos auxiliares
     void AdicionarLivro(Livro* livro);
-    void RegistarEmprestimo(Livro* livro, Pessoa* leitor);
     void RelatorioMultasPendentes();
     std::map<Livro*, std::list<Pessoa*>> reservas; // Livro e lista de leitores que reservaram
     void RegistarReserva(Livro* livro, Pessoa* leitor);
     void ExibirReservas();
     void ListagemLivrosPorCategoria(const std::string& categoria);
-
+    void AddEmprestimo(Emprestimo* emprestimo);
+    void registarEmprestimo();  
 };
 
 #endif // BIBLIOTECA_H

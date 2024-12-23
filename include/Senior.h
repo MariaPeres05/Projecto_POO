@@ -2,6 +2,8 @@
 #define SENIOR_H
 
 #include "Pessoa.h"
+#include "Multa.h"
+#include <string>
 
 class Senior : public Pessoa {
 public:

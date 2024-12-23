@@ -1,6 +1,6 @@
 #ifndef EMPRESTIMO_H
 #define EMPRESTIMO_H
-//#include <ctime>
+
 #include <string>
 #include "Livro.h"
 #include "Pessoa.h"
@@ -15,17 +15,16 @@ private:
 public:
     Emprestimo(Livro* livro, Pessoa* leitor);
     ~Emprestimo();
-    
+
     int calcularDiasAtrasados(const std::string& dataDevolucao);
     bool estaAtrasado() const;
     void prolongar();
     void notificarAtraso() const;
     bool podeProlongar() const;
-    Pessoa* getLeitor() const {
-        return leitor;
-    }
-    std::string getDataDevolucao() const;
-    Livro* getLivro() const; 
+
+    Pessoa* getLeitor() const;
+    Livro* getLivro() const;                 
+    std::string getDataDevolucao() const;    
 };
 
 #endif // EMPRESTIMO_H

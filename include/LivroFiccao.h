@@ -10,7 +10,9 @@ public:
     ~LivroFiccao() override;
 
     void exibirDetalhes() const override;
-    virtual std::string getCategoria () const override;
+    std::string getCategoria () const override;
+    std::string getTituloFiccao() const; 
+    
 };
 
 #endif // LIVROFICCAO_H

@@ -16,3 +16,6 @@ void Jornal::exibirDetalhes() const {
 std::string Jornal::getCategoria() const {
     return "Jornal";
 }
+std::string Jornal::getDataPublicacao() const {
+    return dataPublicacao; // Retorna o atributo data de publicação
+}

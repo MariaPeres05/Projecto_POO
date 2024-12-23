@@ -12,3 +12,10 @@ void Revista::exibirDetalhes() const {
               << ", Número da Edição: " << numeroEdicao
               << ", Disponível: " << (disponivel ? "Sim" : "Não") << std::endl;
 }
+
+std::string Revista::getCategoria() const {
+    return "Revista";  
+}
+int Revista::getNumeroEdicao() const {
+    return numeroEdicao; // Retorna o atributo número da edição
+}

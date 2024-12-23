@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/maria/OneDrive/Ambiente de Trabalho/Projecto_POO",
-      "program": "c:/Users/maria/OneDrive/Ambiente de Trabalho/Projecto_POO/build/Debug/outDebug",
+      "cwd": "c:/Users/maria/OneDrive/Ambiente de Trabalho/Projecto_POO/src",
+      "program": "c:/Users/maria/OneDrive/Ambiente de Trabalho/Projecto_POO/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
