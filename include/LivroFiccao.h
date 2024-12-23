@@ -13,6 +13,7 @@ public:
     std::string getCategoria () const override;
     std::string getTituloFiccao() const; 
     
+    
 };
 
 #endif // LIVROFICCAO_H

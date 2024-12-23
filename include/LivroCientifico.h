@@ -4,6 +4,7 @@
 #include "Livro.h"
 #include <string>
 
+
 class LivroCientifico : public Livro {
 private:
     std::string areaCientifica;
@@ -15,6 +16,7 @@ public:
     void exibirDetalhes() const override;
     std::string getCategoria() const override;
     std::string getAreaCientifica() const; 
+   
 };
 
 #endif // LIVROCIENTIFICO_H

@@ -14,10 +14,13 @@ Emprestimo::Emprestimo(Livro* livro, Pessoa* leitor)
     tm* t = localtime(&now);
     t->tm_mday += 7;  // 7 dias para devolução
     mktime(t);
+
+    // Ajustando o formato para YYYY-MM-DD
     char buffer[100];
-    strftime(buffer, sizeof(buffer), "%Y-%m-%d", t);
+    strftime(buffer, sizeof(buffer), "%Y-%m-%d", t);  
     dataDevolucao = buffer;
 }
+
 
 Emprestimo::~Emprestimo() {}
 
@@ -34,7 +37,7 @@ Livro* Emprestimo::getLivro() const {
 }
 
 int Emprestimo::calcularDiasAtrasados(const std::string& dataDevolucao) {
-    time_t agora = time(0); // Data atual
+    time_t agora = time(0);  // Data atual
     struct tm tmDevolucao = {}; // Declara e inicializa a estrutura 'tm'
     std::istringstream ss(dataDevolucao);
 
@@ -60,14 +63,20 @@ int Emprestimo::calcularDiasAtrasados(const std::string& dataDevolucao) {
 
     // Calcula a diferença em segundos e converte para dias
     double diffSegundos = difftime(agora, tDevolucao);
-    return static_cast<int>(diffSegundos / (60 * 60 * 24)); // Retorna a diferença em dias
+    return static_cast<int>(diffSegundos / (60 * 60 * 24));  // Retorna a diferença em dias
 }
 
+
+float Emprestimo::calcularMulta(float taxaBase, float desconto) {
+    int diasAtrasado = calcularDiasAtrasados(dataDevolucao); // Calcula os dias de atraso
+    return Multa::calcularMulta(diasAtrasado, taxaBase, desconto); // Chama o método da classe Multa
+}
 
 bool Emprestimo::estaAtrasado() const {
     time_t devolucao = Uteis::parseDateTime(dataDevolucao.c_str(), "%Y-%m-%d");
     return (devolucao != -1) && (difftime(time(0), devolucao) > 0);
 }
+
 
 void Emprestimo::prolongar() {
     time_t devolucao = Uteis::parseDateTime(dataDevolucao.c_str(), "%Y-%m-%d");
@@ -90,3 +99,4 @@ void Emprestimo::notificarAtraso() const {
 bool Emprestimo::podeProlongar() const {
     return leitor->podeProlongar();
 }
+

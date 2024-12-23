@@ -9,6 +9,7 @@ protected:
     std::string autor;
     std::string categoria;
     bool disponivel;
+    bool emprestado; 
 
 public:
     Livro(const std::string& titulo, const std::string& autor, const std::string& categoria);
@@ -16,7 +17,8 @@ public:
 
     virtual void exibirDetalhes() const = 0;
     virtual std::string getCategoria() const;
-
+    
+    bool estaEmprestado() const;
     bool estaDisponivel() const;
     void marcarComoIndisponivel();
     void marcarComoDisponivel();

@@ -12,7 +12,7 @@
 #include <sstream>
 #include <iostream>
 #include <string>
-
+#include <algorithm>
 
 
 Biblioteca::Biblioteca() {}
@@ -59,16 +59,21 @@ bool Biblioteca::SaveLeitoresToFile(const std::string& filename) {
         std::cerr << "Erro ao abrir o ficheiro para escrita.\n";
         return false;
     }
-
     for (const auto& leitor : leitores) {
         file << leitor->tipo() << ";" << leitor->getNome() << ";" << leitor->getId() << ";" 
              << leitor->getLimiteEmprestimos() << "\n";
     }
-
     file.close();
     return true;
 }
 
+
+
+std::string trim(const std::string& str) {
+    size_t first = str.find_first_not_of(" \t\n\r");
+    size_t last = str.find_last_not_of(" \t\n\r");
+    return (first == std::string::npos || last == std::string::npos) ? "" : str.substr(first, last - first + 1);
+}
 
 bool Biblioteca::LoadLivrosFromFile(const std::string& filename) {
     std::ifstream file(filename);
@@ -82,37 +87,42 @@ bool Biblioteca::LoadLivrosFromFile(const std::string& filename) {
         std::istringstream stream(linha);
         std::string categoria, titulo, autor, extra;
 
-        // Lê os campos separados por ";"
         std::getline(stream, categoria, ';');
         std::getline(stream, titulo, ';');
         std::getline(stream, autor, ';');
-        std::getline(stream, extra, ';'); // Campo adicional (como data ou número da edição)
+        std::getline(stream, extra, ';');
+
+        categoria = trim(categoria); // Remove espaços extras
+        titulo = trim(titulo);
+        autor = trim(autor);
+        extra = trim(extra);
 
         Livro* novoLivro = nullptr;
 
-        if (categoria == "Ficcao") {
+        if (categoria == "Ficção") {
             novoLivro = new LivroFiccao(titulo, autor);
         } else if (categoria == "Científico") {
             novoLivro = new LivroCientifico(titulo, autor, extra);
         } else if (categoria == "Educativo") {
             novoLivro = new LivroEducativo(titulo, autor, extra);
         } else if (categoria == "Jornal") {
-            novoLivro = new Jornal(titulo, autor, extra); // Extra contém a data de publicação
+            novoLivro = new Jornal(titulo, autor, extra);
         } else if (categoria == "Revista") {
             int numeroEdicao = std::stoi(extra);
-            novoLivro = new Revista(titulo, autor, numeroEdicao); // Extra contém o número da edição
+            novoLivro = new Revista(titulo, autor, numeroEdicao);
         }
 
-        // Valida e adiciona o livro à lista
         if (novoLivro) {
             livros.push_back(novoLivro);
         } else {
             std::cerr << "Erro ao processar a linha: " << linha << "\n";
         }
     }
+
     file.close();
     return true;
 }
+
 
 
 bool Biblioteca::LoadLeitoresFromFile(const std::string& filename) {
@@ -125,16 +135,17 @@ bool Biblioteca::LoadLeitoresFromFile(const std::string& filename) {
     std::string linha;
     while (std::getline(file, linha)) {
         std::istringstream stream(linha);
-        std::string tipo, nome;
-        int id;
 
-        // Lê os campos separados por ";"
+        std::string tipo, nome;
+        int id, numeroEmprestimos;
         std::getline(stream, tipo, ';');
         std::getline(stream, nome, ';');
         stream >> id;
+        stream.ignore(1, ';'); // Ignore the separator
+        stream >> numeroEmprestimos;
+        stream.ignore(1, ';'); // Ignore the separator
 
         Pessoa* novoLeitor = nullptr;
-
         if (tipo == "Estudante") {
             novoLeitor = new Estudante(nome, id);
         } else if (tipo == "Professor") {
@@ -145,7 +156,6 @@ bool Biblioteca::LoadLeitoresFromFile(const std::string& filename) {
             novoLeitor = new Senior(nome, id);
         }
 
-        // Valida e adiciona o leitor à lista
         if (novoLeitor) {
             leitores.push_back(novoLeitor);
         } else {
@@ -154,9 +164,169 @@ bool Biblioteca::LoadLeitoresFromFile(const std::string& filename) {
     }
 
     file.close();
+    std::cout << "Leitores carregados com sucesso do arquivo.\n";
     return true;
 }
 
+
+bool Biblioteca::SaveEmprestimosToFile(const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o ficheiro para salvar os empréstimos.\n";
+        return false;
+    }
+
+    for (const auto& emprestimo : emprestimos) {
+        Livro* livro = emprestimo->getLivro();
+        Pessoa* leitor = emprestimo->getLeitor();
+
+        file << livro->getTitulo() << ";"         // Título do livro
+             << livro->getAutor() << ";"          // Autor do livro
+             << leitor->getId() << ";"            // ID do leitor
+             << leitor->getNome() << ";"          // Nome do leitor
+             << emprestimo->getDataDevolucao() << ";" // Data de devolução
+             << emprestimo->getDataEmprestimo() << "\n"; // Data de empréstimo
+    }
+
+    file.close();
+    return true;
+}
+
+bool Biblioteca::LoadEmprestimosFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o ficheiro para carregar os empréstimos.\n";
+        return false;
+    }
+
+    std::string linha;
+    while (std::getline(file, linha)) {
+        std::istringstream stream(linha);
+        std::string titulo, autor, nomeLeitor, dataEmprestimo, dataDevolucao;
+        int idLeitor;
+
+        std::getline(stream, titulo, ';');
+        std::getline(stream, autor, ';');
+        stream >> idLeitor;
+        stream.ignore(1, ';'); // Ignora o separador ";"
+        std::getline(stream, nomeLeitor, ';');
+        std::getline(stream, dataEmprestimo, ';');
+        std::getline(stream, dataDevolucao, ';');
+
+        // Encontra o livro correspondente
+        Livro* livro = nullptr;
+        for (auto& l : livros) {
+            if (l->getTitulo() == titulo && l->getAutor() == autor) {
+                livro = l;
+                break;
+            }
+        }
+
+        if (!livro) {
+            std::cerr << "Livro não encontrado: " << titulo << "\n";
+            continue;
+        }
+
+        // Encontra o leitor correspondente
+        Pessoa* leitor = nullptr;
+        for (auto& p : leitores) {
+            if (p->getId() == idLeitor) {
+                leitor = p;
+                break;
+            }
+        }
+
+        if (!leitor) {
+            std::cerr << "Leitor não encontrado: " << nomeLeitor << "\n";
+            continue;
+        }
+
+        // Cria o empréstimo e atualiza o status do livro
+        Emprestimo* novoEmprestimo = new Emprestimo(livro, leitor);
+        novoEmprestimo->setDataDevolucao(dataDevolucao);
+        novoEmprestimo->setDataEmprestimo(dataEmprestimo);
+        emprestimos.push_back(novoEmprestimo);
+
+        // Marcar o livro como indisponível
+        livro->marcarComoIndisponivel();
+    }
+
+    file.close();
+    std::cout << "Emprestimos carregados com sucesso do arquivo.\n";
+    return true;
+}
+
+
+bool Biblioteca::SaveReservasToFile(const std::string& filename) {
+    std::ofstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o ficheiro para escrita.\n";
+        return false;
+    }
+
+    for (const auto& reserva : reservas) {
+        // Reserva[livro] contém a chave (livro) e o valor (lista de leitores)
+        for (auto* leitor : reserva.second) {
+            file << reserva.first->getTitulo() << ";" // Título do livro
+                 << reserva.first->getAutor() << ";"  // Autor do livro
+                 << leitor->getNome() << ";"          // Nome do leitor
+                 << leitor->getId() << "\n";          // ID do leitor (pode mudar se for necessário)
+
+        }
+    }
+    file.close();
+    return true;
+}
+
+
+bool Biblioteca::LoadReservasFromFile(const std::string& filename) {
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo de reservas para carregar.\n";
+        return false;
+    }
+
+    std::string linha;
+    while (std::getline(file, linha)) {
+        std::istringstream stream(linha);
+        std::string tituloLivro, autorLivro, nomeLeitor;
+        int idLeitor;
+
+        std::getline(stream, tituloLivro, ';');
+        std::getline(stream, autorLivro, ';');
+        std::getline(stream, nomeLeitor, ';');
+        stream >> idLeitor;
+        stream.ignore(1, ';'); // Ignorar o separador
+
+        // Procurar o livro correspondente
+        Livro* livro = nullptr;
+        for (auto& l : livros) {
+            if (l->getTitulo() == tituloLivro && l->getAutor() == autorLivro) {
+                livro = l;
+                break;
+            }
+        }
+
+        // Procurar o leitor correspondente
+        Pessoa* leitor = nullptr;
+        for (auto& p : leitores) {
+            if (p->getId() == idLeitor) {
+                leitor = p;
+                break;
+            }
+        }
+
+        if (livro && leitor) {
+            reservas[livro].push_back(leitor);
+        } else {
+            std::cerr << "Erro ao carregar reserva: Livro ou Leitor não encontrados.\n";
+        }
+    }
+
+    file.close();
+    std::cout << "Reservas carregadas com sucesso do arquivo.\n";
+    return true;
+}
 
 void Biblioteca::RelatorioCategoria(const std::string& cat) {
     std::cout << "Relatório de livros da categoria: " << cat << std::endl;
@@ -178,10 +348,13 @@ void Biblioteca::ProlongarEmprestimos() {
 void Biblioteca::SistemaNotificacoesAtraso() {
     for (auto emprestimo : emprestimos) {
         if (emprestimo->estaAtrasado()) {
-            emprestimo->notificarAtraso();
+            auto leitor = emprestimo->getLeitor();
+            auto livro = emprestimo->getLivro();
+            leitor->notificarAtraso(livro->getTitulo(), emprestimo->getDataDevolucao());
         }
     }
 }
+
 
 void Biblioteca::ListagemLivros() {
     std::cout << "Listagem de Livros na Biblioteca:" << std::endl;
@@ -219,34 +392,33 @@ bool Biblioteca::AddLeitor(Pessoa* P) {
 }
 
 
-
 void Biblioteca::AdicionarLivro(Livro* livro) {
     if (!livro) {
-        std::cerr << "Erro ao adicionar o livro: livro inválido!" << std::endl;
+        std::cerr << "Erro: Livro inválido.\n";
         return;
     }
 
-    // Verificar duplicatas
+    // Evitar duplicatas verificando antes
     for (const auto& l : livros) {
-        if (l->getTitulo() == livro->getTitulo() && 
-            l->getAutor() == livro->getAutor() &&
-            l->getCategoria() == livro->getCategoria()) {
-            std::cout << "Livro já existe na biblioteca! Não foi adicionado.\n";
+        if (l->getTitulo() == livro->getTitulo() && l->getAutor() == livro->getAutor()) {
+            std::cerr << "Erro: Livro já existe na biblioteca.\n";
             delete livro; // Evita vazamento de memória
             return;
         }
     }
 
-    // Adicionar o livro se não for duplicado
+    // Adicionar livro à lista
     livros.push_back(livro);
-    std::cout << "Livro adicionado - " << livro->getTitulo() << " Categoria: " << livro->getCategoria() << std::endl;
+    std::cout << "Livro adicionado - " << livro->getTitulo()
+              << " Categoria: " << livro->getCategoria() << "\n";
 
-    // Salvar no ficheiro após adicionar
+    // Salvar no arquivo
     if (!SaveLivrosToFile("livros.txt")) {
-        std::cerr << "Erro ao salvar o livro no ficheiro.\n";
+        std::cerr << "Erro ao salvar os livros no arquivo.\n";
+    } else {
+        std::cout << "Livros salvos no arquivo com sucesso.\n";
     }
 }
-
 
 
 void Biblioteca::AddEmprestimo(Emprestimo* emprestimo) {
@@ -255,12 +427,77 @@ void Biblioteca::AddEmprestimo(Emprestimo* emprestimo) {
 }
 
 void Biblioteca::RegistarReserva(Livro* livro, Pessoa* leitor) {
+    // Verifica se o livro está disponível. Se estiver, não precisa de ser reservado.
     if (livro->estaDisponivel()) {
-        std::cout << "Livro está disponível, não pode ser reservado." << std::endl;
+        std::cout << "O livro está disponível e não precisa de ser reservado.\n";
         return;
     }
-    reservas[livro].push_back(leitor);
-    std::cout << leitor->getNome() << " reservou o livro: " << livro->getTitulo() << std::endl;
+
+    // Verifica se o livro já foi reservado pelo mesmo leitor
+    auto& listaReservas = reservas[livro];
+    if (std::find(listaReservas.begin(), listaReservas.end(), leitor) != listaReservas.end()) {
+        std::cout << "O leitor já reservou este livro.\n";
+        return;
+    }
+
+    // Adiciona o leitor à lista de reservas do livro
+    listaReservas.push_back(leitor);
+
+    // Print de depuração para verificar se a reserva foi registrada
+    std::cout << "Reserva registrada para o livro: " << livro->getTitulo() 
+              << " por " << leitor->getNome() << std::endl;
+
+    // Salvar as reservas no arquivo após registá-las
+    if (!SaveReservasToFile("reservas.txt")) {
+        std::cerr << "Erro ao salvar a reserva no arquivo.\n";
+    }
+}
+
+
+
+void Biblioteca::devolverLivro(Pessoa* leitor) {
+    std::cout << "Livros emprestados pelo leitor " << leitor->getNome() << ":\n";
+
+    std::vector<Emprestimo*> emprestimosLeitor;
+
+    // Find books borrowed by the reader
+    for (auto& emprestimo : emprestimos) {
+        if (emprestimo->getLeitor() == leitor) {
+            emprestimosLeitor.push_back(emprestimo);
+            std::cout << "- " << emprestimo->getLivro()->getTitulo() << "\n";
+        }
+    }
+
+    if (emprestimosLeitor.empty()) {
+        std::cout << "Nenhum livro emprestado.\n";
+        return;
+    }
+
+    // Select a book to return
+    std::cout << "Escolha o livro a devolver:\n";
+    int escolha;
+    std::cin >> escolha;
+
+    if (escolha < 1 || escolha > emprestimosLeitor.size()) {
+        std::cout << "Escolha inválida.\n";
+        return;
+    }
+
+    Emprestimo* emprestimoSelecionado = emprestimosLeitor[escolha - 1];
+
+    auto it = std::find(emprestimos.begin(), emprestimos.end(), emprestimoSelecionado);
+    if (it != emprestimos.end()) {
+    emprestimos.erase(it); // Remove o empréstimo selecionado
+     }
+
+
+    // Mark the book as available
+    emprestimoSelecionado->getLivro()->marcarComoDisponivel();
+    delete emprestimoSelecionado;
+
+    std::cout << "Livro devolvido com sucesso.\n";
+
+    SaveEmprestimosToFile("emprestimos.txt");
 }
 
 void Biblioteca::ExibirReservas() {
@@ -276,44 +513,53 @@ void Biblioteca::ExibirReservas() {
     }
 }
 
-void Biblioteca::RelatorioMultasPendentes() {
-    for (auto& emprestimo : emprestimos) {
-        if (emprestimo->estaAtrasado()) {
-            std::time_t dataAtual = std::time(nullptr);  // Obtém o tempo atual
-            struct tm* tmDataAtual = localtime(&dataAtual);  // Converte para struct tm
-            std::string dataDevolucaoStr = emprestimo->getDataDevolucao();
-            struct tm tmDataDevolucao = {0};  // Inicializa tm
-            std::stringstream ss(dataDevolucaoStr);
-            char delimiter;
-            ss >> tmDataDevolucao.tm_mday >> delimiter >> tmDataDevolucao.tm_mon >> delimiter >> tmDataDevolucao.tm_year;
-            tmDataDevolucao.tm_mon -= 1;
-            tmDataDevolucao.tm_year -= 1900;
-            std::time_t tDataDevolucao = std::mktime(&tmDataDevolucao);
-            double segundosDeAtraso = std::difftime(dataAtual, tDataDevolucao);
-            int diasAtrasados = segundosDeAtraso / (60 * 60 * 24);
-            float multa = emprestimo->getLeitor()->calcularMulta(diasAtrasados, 2.0f);
-            std::cout << "Leitor: " << emprestimo->getLeitor()->getNome() << std::endl;
-            std::cout << "Livro: " << emprestimo->getLivro()->getTitulo() << std::endl;  // Isso pressupõe que você tem o método getLivro()
-            std::cout << "Dias Atrasados: " << diasAtrasados << std::endl;
-            std::cout << "Multa: " << multa << " reais" << std::endl;
-        }
-    }
+const std::map<Livro*, std::list<Pessoa*>>& Biblioteca::getReservas() const {
+    return reservas;
 }
 
 
+void Biblioteca::RelatorioMultasPendentes() {
+    bool encontrouMultas = false; // Flag para verificar se há multas
 
-void Biblioteca::ListagemLivrosPorCategoria(const std::string& categoria) {
-    std::cout << "Livros da categoria: " << categoria << std::endl;
+    for (auto& emprestimo : emprestimos) {
+        if (emprestimo->estaAtrasado()) {
+            encontrouMultas = true;
 
-    int index = 1; // Inicializa o índice do livro
-    for (const auto& livro : livros) { // Itera sobre todos os livros no vetor 'livros'
-        if (livro->getCategoria() == categoria) {
-            std::cout << "Livro " << index++ << " - " << livro->getTitulo() << std::endl;
+            std::string tituloLivro = emprestimo->getLivro()->getTitulo();
+            std::string dataDevolucao = emprestimo->getDataDevolucao();
+            Pessoa* leitor = emprestimo->getLeitor();
+
+            int diasAtrasados = emprestimo->calcularDiasAtrasados(dataDevolucao);
+            float multa = leitor->calcularMulta(diasAtrasados, 2.0f);
+
+            std::cout << "Leitor: " << leitor->getNome() << "\n";
+            std::cout << "Livro: " << tituloLivro << "\n";
+            std::cout << "Data de devolução: " << dataDevolucao << "\n";
+            std::cout << "Dias atrasados: " << diasAtrasados << "\n";
+            std::cout << "Multa: R$ " << multa << "\n\n";
         }
     }
 
-    if (index == 1) { // Nenhum livro listado
-        std::cout << "Nenhum livro encontrado na categoria " << categoria << "." << std::endl;
+    if (!encontrouMultas) {
+        std::cout << "Nenhuma multa pendente encontrada.\n";
+    }
+}
+
+void Biblioteca::ListagemLivrosPorCategoria(const std::string& categoria) {
+    std::cout << "Livros da categoria: " << categoria << "\n";
+
+    bool encontrou = false;
+    for (const auto& livro : livros) {
+//        std::cout << "Entrei! Livro Autor: " << livro->getAutor() << "\n";
+//        std::cout << "Entrei! Livro Categoria: " << livro->getCategoria() << "\n";
+        if (livro->getCategoria() == categoria) {
+            std::cout << "- " << livro->getTitulo() << " por " << livro->getAutor() << "\n";
+            encontrou = true;
+        }
+    }
+
+    if (!encontrou) {
+        std::cout << "Nenhum livro encontrado na categoria " << categoria << ".\n";
     }
 }
 
@@ -328,45 +574,108 @@ void Biblioteca::registarEmprestimo() {
     // Listar livros disponíveis
     std::cout << "Livros disponíveis:\n";
     int i = 1;
+    std::vector<Livro*> livrosDisponiveis;
     for (auto livro : livros) {
         if (livro->estaDisponivel()) {
             std::cout << i++ << ". " << livro->getTitulo() << " - " << livro->getAutor() << "\n";
+            livrosDisponiveis.push_back(livro);
         }
+    }
+
+    if (livrosDisponiveis.empty()) {
+        std::cout << "Nenhum livro disponível.\n";
+        return;
     }
 
     int livroEscolhido;
     std::cout << "Escolha um livro pelo número: ";
     std::cin >> livroEscolhido;
 
-    if (livroEscolhido < 1 || livroEscolhido >= i) {
+    if (livroEscolhido < 1 || livroEscolhido > livrosDisponiveis.size()) {
         std::cout << "Escolha inválida.\n";
         return;
     }
 
-    auto livroSelecionado = livros[livroEscolhido - 1];
-    if (!livroSelecionado->estaDisponivel()) {
-        std::cout << "O livro já está emprestado.\n";
-        return;
-    }
+    auto livroSelecionado = livrosDisponiveis[livroEscolhido - 1];
 
     // Listar leitores
     std::cout << "Leitores disponíveis:\n";
     i = 1;
+    std::vector<Pessoa*> listaLeitores;
     for (auto leitor : leitores) {
         std::cout << i++ << ". " << leitor->getNome() << " (ID: " << leitor->getId() << ")\n";
+        listaLeitores.push_back(leitor);
     }
 
     int leitorEscolhido;
     std::cout << "Escolha um leitor pelo número: ";
     std::cin >> leitorEscolhido;
 
-    if (leitorEscolhido < 1 || leitorEscolhido >= i) {
+    if (leitorEscolhido < 1 || leitorEscolhido > listaLeitores.size()) {
         std::cout << "Escolha inválida.\n";
         return;
     }
-    auto leitorSelecionado = leitores.front();
+
+    auto leitorSelecionado = listaLeitores[leitorEscolhido - 1];
+
+    // Registrar o empréstimo
     Emprestimo* novoEmprestimo = new Emprestimo(livroSelecionado, leitorSelecionado);
     emprestimos.push_back(novoEmprestimo);
     livroSelecionado->marcarComoIndisponivel();
+
     std::cout << "Empréstimo registrado com sucesso!\n";
+
+    // Salvar no arquivo
+    if (!SaveEmprestimosToFile("emprestimos.txt")) {
+        std::cerr << "Erro ao salvar o empréstimo no arquivo.\n";
+    }
+}
+
+const std::list<Pessoa*>& Biblioteca::getLeitores() const {
+    return leitores;
+}
+
+void Biblioteca::RelatorioEmprestimosPorTipoLivro() {
+    // Mapeia o tipo de livro com os empréstimos e leitores associados
+    std::map<std::string, std::map<std::string, int>> emprestimosPorTipoLivro; // Tipo do livro -> (Leitor -> Quantidade)
+    // Iterar sobre todos os empréstimos
+    for (const auto& emprestimo : emprestimos) {
+        Livro* livro = emprestimo->getLivro();
+        Pessoa* leitor = emprestimo->getLeitor();
+        // Identificador do leitor (Nome ou ID)
+        std::ostringstream leitorIdStream;
+        leitorIdStream << leitor->getNome() << " (ID: " << leitor->getId() << ")";
+        std::string leitorIdentificador = leitorIdStream.str();
+        // Atualizar a contagem de empréstimos
+        emprestimosPorTipoLivro[livro->getCategoria()][leitorIdentificador]++;
+    }
+    // Exibir o relatório
+    std::cout << "\n======= Relatório de Empréstimos por Tipo de Livro =======\n";
+    for (const auto& tipoLivro : emprestimosPorTipoLivro) {
+        const std::string& categoria = tipoLivro.first;
+        const std::map<std::string, int>& leitores = tipoLivro.second;
+
+        std::cout << "Categoria: " << categoria << "\n";
+
+        int totalEmprestimos = 0;
+        std::string leitorMaisFrequente;
+        int maxEmprestimos = 0;
+        // Detalhes de leitores por categoria
+        for (const auto& leitor : leitores) {
+            const std::string& identificadorLeitor = leitor.first;
+            int quantidade = leitor.second;
+            totalEmprestimos += quantidade;
+
+            std::cout << "  - Leitor: " << identificadorLeitor << " | Empréstimos: " << quantidade << "\n";
+            if (quantidade > maxEmprestimos) {
+                maxEmprestimos = quantidade;
+                leitorMaisFrequente = identificadorLeitor;
+            }
+        }
+        // Resumo para cada tipo de livro
+        std::cout << "  Total de empréstimos nesta categoria: " << totalEmprestimos << "\n";
+        std::cout << "  Leitor mais frequente: " << leitorMaisFrequente << " com " << maxEmprestimos << " empréstimos\n";
+        std::cout << "---------------------------------------------------------\n";
+    }
+    std::cout << "==========================================================\n";
 }

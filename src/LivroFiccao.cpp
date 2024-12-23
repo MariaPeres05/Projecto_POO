@@ -13,7 +13,7 @@ void LivroFiccao::exibirDetalhes() const {
 }
 
 std::string LivroFiccao::getCategoria() const {
-    return "Ficcao"; 
+    return "Ficção"; 
 }
 std::string LivroFiccao::getTituloFiccao() const {
     return titulo;

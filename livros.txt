@@ -1,3 +1,7 @@
-Ficcao;Gravity Falls;Disney;
-Ficcao;O homicido Perfeito;Holly Jackson ;
-Ficcao;A viuva e o Papagaio;Virginia Wolf;
+Educativo;Os Lusiadas;Luis de Camoes;12
+Jornal;Jornal da Beira;Padr  Z;Maio
+Ficção;Invisivel;Eloy Moreno;
+Ficção;O Rapaz da Neve;Samuel Bjork;
+Revista;Caras;Carlos Maciel;511
+Jornal;Correio Da Manha;V tor Direito;1979
+Ficção;Teste Daniel ;Daniel ;

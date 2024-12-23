@@ -12,22 +12,31 @@
 #include <vector>
 #include <string>
 
+// Função utilitária para remover espaços em branco do início e do fim de uma string
+std::string trim(const std::string& str);
+
 class Biblioteca {
 private:
     std::list<Pessoa*> leitores;  // Lista de leitores registrados
     std::vector<Livro*> livros;    // Lista de livros disponíveis
-    std::list<Emprestimo*> emprestimos;  // Lista de empréstimos ativos
+    std::vector<Emprestimo*> emprestimos;  // Lista de empréstimos
+    std::map<Livro*, std::list<Pessoa*>> reservas;  
 
 public:
     Biblioteca();
     virtual ~Biblioteca();
 
+    
     // Métodos principais
     bool SaveLivrosToFile(const std::string& filename);
     bool LoadLivrosFromFile(const std::string& filename);
     bool SaveLeitoresToFile(const std::string& filename);  
     bool LoadLeitoresFromFile(const std::string& filename);
     void RelatorioCategoria(const std::string& cat);
+    bool SaveEmprestimosToFile(const std::string& filename);
+    bool SaveReservasToFile(const std::string& filename);
+    bool LoadEmprestimosFromFile(const std::string& filename);
+    bool LoadReservasFromFile(const std::string& filename);
     void ProlongarEmprestimos();
     void SistemaNotificacoesAtraso();
     void ListagemLivros();
@@ -37,12 +46,19 @@ public:
     // Métodos auxiliares
     void AdicionarLivro(Livro* livro);
     void RelatorioMultasPendentes();
-    std::map<Livro*, std::list<Pessoa*>> reservas; // Livro e lista de leitores que reservaram
+    void RelatorioEmprestimosPorTipoLivro();
     void RegistarReserva(Livro* livro, Pessoa* leitor);
     void ExibirReservas();
+    void devolverLivro(Pessoa* leitor);
     void ListagemLivrosPorCategoria(const std::string& categoria);
     void AddEmprestimo(Emprestimo* emprestimo);
     void registarEmprestimo();  
-};
+    const std::list<Pessoa*>& getLeitores() const;
+    const std::vector<Livro*>& getLivros() const { return livros; }
+    const std::vector<Emprestimo*>& getEmprestimos() const { return emprestimos; }
+    const std::map<Livro*, std::list<Pessoa*>>& getReservas() const;
+     
+
+    };
 
 #endif // BIBLIOTECA_H
